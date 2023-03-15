@@ -1,10 +1,18 @@
 import AuthWindow from "@/components/auth/authWindow";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Login() {
 	const [showAuth, setShowAuth] = useState(false);
 	const { data: session, status } = useSession();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (session) {
+			router.push("/", undefined, { locale: router.locale });
+		}
+	}, [session]);
 
 	if (status === "authenticated") {
 		return (
