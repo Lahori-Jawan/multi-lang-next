@@ -1,4 +1,3 @@
-import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect } from "react";
 
 interface PopUpWindow {

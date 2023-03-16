@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { DEFAULT_LOCALE } from "@constants/misc";
 import { getToken } from "next-auth/jwt";
-import { NextURL } from "next/dist/server/web/next-url";
 
 const PUBLIC_FILE = /\.(.*)$/;
 const publicRoutes = ["login", "register", "google-signin"];
@@ -47,7 +46,7 @@ function redirectToLogin(req: NextRequest) {
 		? req.cookies.get("NEXT_LOCALE") || DEFAULT_LOCALE
 		: req.nextUrl.locale;
 
-	return NextResponse.redirect(new URL(`${locale}/login`, req.url));
+	return NextResponse.redirect(new URL(`${locale}/auth/login`, req.url));
 }
 
 function prefixAndRedirect(req: NextRequest) {
