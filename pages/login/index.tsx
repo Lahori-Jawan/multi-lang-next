@@ -1,27 +1,13 @@
 import AuthWindow from "@/components/auth/authWindow";
-import { useSession, signIn, signOut } from "next-auth/react";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { GetServerSidePropsContext } from "next";
+import { useSession, getSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function Login() {
 	const [showAuth, setShowAuth] = useState(false);
-	const { data: session, status } = useSession();
-	const router = useRouter();
+	const { status } = useSession();
 
-	useEffect(() => {
-		if (session) {
-			router.push("/", undefined, { locale: router.locale });
-		}
-	}, [session]);
-
-	if (status === "authenticated") {
-		return (
-			<div>
-				<h2> Welcome {session?.user?.email} 😀</h2>
-				<button onClick={() => signOut()}>Sign out</button>
-			</div>
-		);
-	} else if (status === "unauthenticated") {
+	if (status === "unauthenticated") {
 		return (
 			<div>
 				<h2>Please Login</h2>
@@ -36,4 +22,21 @@ export default function Login() {
 			<h1>Loading...</h1>
 		</div>
 	);
+}
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+	const session = await getSession(ctx);
+
+	if (session) {
+		return {
+			redirect: {
+				destination: "/",
+				permanent: false,
+			},
+		};
+	}
+
+	return {
+		props: {},
+	};
 }

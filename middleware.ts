@@ -18,16 +18,7 @@ export async function middleware(req: NextRequest) {
 		raw: true,
 	});
 
-	let url: string | NextURL | URL;
-	if (!token) {
-		let locale;
-		if (req.nextUrl.pathname.includes("google-signin")) return;
-		if (req.nextUrl.locale === "default") {
-			locale = req.cookies.get("NEXT_LOCALE") || DEFAULT_LOCALE;
-			url = new URL(`${locale}/login`, req.url);
-			return NextResponse.redirect(url);
-		}
-	}
+	if (!token) return redirectToLogin(req);
 
 	const response = prefixAndRedirect(req);
 
@@ -42,6 +33,21 @@ function skipRoutes(req: NextRequest) {
 	) {
 		return true;
 	}
+}
+
+function redirectToLogin(req: NextRequest) {
+	const IS_PUBLIC_PATH = publicRoutes.some((path) =>
+		req.nextUrl.pathname.includes(path)
+	);
+
+	if (IS_PUBLIC_PATH) return;
+
+	const IS_UNKNOWN_LOCALE = req.nextUrl.locale === "default";
+	const locale = IS_UNKNOWN_LOCALE
+		? req.cookies.get("NEXT_LOCALE") || DEFAULT_LOCALE
+		: req.nextUrl.locale;
+
+	return NextResponse.redirect(new URL(`${locale}/login`, req.url));
 }
 
 function prefixAndRedirect(req: NextRequest) {

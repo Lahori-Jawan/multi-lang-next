@@ -7,6 +7,7 @@ import Link from "next/link";
 import English from "../lang/en/about.json";
 import Arabic from "../lang/ar/about.json";
 import { SessionProvider } from "next-auth/react";
+import { Layout } from "@/components/common/layout";
 
 export default function App({ Component, pageProps }: AppProps) {
 	const { asPath, locale = "en", defaultLocale } = useRouter();
@@ -42,10 +43,12 @@ export default function App({ Component, pageProps }: AppProps) {
 				locale={locale}
 				defaultLocale={defaultLocale}
 			>
-				<Link href={asPath} locale={language}>
-					{language}
-				</Link>
-				<Component {...pageProps} dir={direction} />
+				<Layout>
+					<Link href={asPath} locale={language}>
+						{language}
+					</Link>
+					<Component {...pageProps} dir={direction} />
+				</Layout>
 			</IntlProvider>
 		</SessionProvider>
 	);
